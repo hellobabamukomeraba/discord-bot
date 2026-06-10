@@ -114,4 +114,4 @@ fs.readdir("./slash/", (_err, files) => {
 });
 
 // İstemci ile giriş yap
-client.login(config.token);
+client.login(config.token)
