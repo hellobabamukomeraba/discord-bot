@@ -134,4 +134,4 @@ if (!BOT_TOKEN) {
 }
 
 console.log("[BILGI] Token alindi, bot giris yapiyor...");
-client.login(BOT_TOKEN);
+client.login(process.env.DISCORD_TOKEN);
