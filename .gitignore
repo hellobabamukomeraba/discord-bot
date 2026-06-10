@@ -1,0 +1,6 @@
+config.json
+botkodu.txt
+.env
+node_modules/
+token.txt
+*.token
