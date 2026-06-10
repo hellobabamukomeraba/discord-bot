@@ -126,7 +126,7 @@ fs.readdir("./slash/", (_err, files) => {
   });
 });
 
-// === EKSİK OLAN INTERACTIONCREATE EVENT'İ (SLASH KOMUTLARI İÇİN) ===
+// === INTERACTION CREATE OLAYI (SLASH KOMUTLARI ICIN) ===
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
   const command = client.interactions.get(interaction.commandName);
@@ -142,41 +142,34 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-// === MESAJ KOMUTLARI İÇİN GELİŞMİŞ İŞLEYİCİ (prefix ! ve rol kontrolü) ===
+// === MESAJ KOMUTLARI ICIN KOMUT IŞLEYICI VE ROL KONTROLÜ ===
 const PREFIX = '!';
-const YETKILI_ROL_ID = '1514373793538244789'; // Bu role sahip olanlar komut kullanabilir
+const YETKILI_ROL_ID = '1514373793538244789';
 
 client.on('messageCreate', async (message) => {
-  // Bot kendi mesajlarını ve diğer botları görmezden gel
   if (message.author.bot) return;
   if (!message.guild) return;
-  
-  // Prefix kontrolü
   if (!message.content.startsWith(PREFIX)) return;
-  
-  // Argümanları ayır
+
   const args = message.content.slice(PREFIX.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
   const command = client.commands.get(commandName);
-  
-  // Geçerli komut yoksa çık
   if (!command) return;
-  
-  // ROL KONTROLÜ: Kullanıcı belirtilen role sahip değilse engelle
+
+  // ROL KONTROLÜ
   if (!message.member.roles.cache.has(YETKILI_ROL_ID)) {
     return message.reply({ content: '❌ Bu komutu kullanmak için yetkiniz yok! Sadece özel role sahip kişiler kullanabilir.', ephemeral: true });
   }
-  
-  // Komutu çalıştır
+
   try {
     await command.execute(client, message, args);
   } catch (error) {
-    console.error(`Komut hatası (${commandName}):`, error);
+    console.error(`Komut hatasi (${commandName}):`, error);
     message.reply('Komut çalıştırılırken bir hata oluştu.');
   }
 });
 
-// ISTEMCI ILE GIRIS YAP
+// === BOT GIRIŞ ===
 const BOT_TOKEN = process.env.DISCORD_TOKEN;
 if (!BOT_TOKEN) {
   console.error("[HATA] DISCORD_TOKEN environment degiskeni bulunamadi!");
