@@ -125,13 +125,14 @@ fs.readdir("./slash/", (_err, files) => {
   });
 });
 
-// ISTEMCI ILE GIRIS YAP - DUZELTILMIS KISIM
+// ISTEMCI ILE GIRIS YAP - KESIN COZUM
 const BOT_TOKEN = process.env.DISCORD_TOKEN;
 if (!BOT_TOKEN) {
   console.error("[HATA] DISCORD_TOKEN environment degiskeni bulunamadi!");
-  console.error("[HATA] Render'a DISCORD_TOKEN eklediginizden emin olun.");
+  console.error("[HATA] Lutfen Render'daki Environment sekmesine DISCORD_TOKEN ekleyin ve dogru token degerini girin.");
+  console.error("[HATA] Token almak icin: Discord Developer Portal -> Bot -> Reset Token -> Kopyala -> Render'a yapistir.");
   process.exit(1);
 }
 
-console.log("[BILGI] Token alindi, bot giris yapiyor...");
-client.login(process.env.DISCORD_TOKEN);
+console.log("[BILGI] Token basariyla alindi. Bot Discord'a baglaniyor...");
+client.login(BOT_TOKEN);
