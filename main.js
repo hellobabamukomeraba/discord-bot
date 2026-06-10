@@ -16,20 +16,6 @@ const client = new Client({
   ],
 });
 
-  const command = client.interactions.get(interaction.commandName);
-  if (!command) return;
-
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({
-      content: 'Komut çalıştırılırken bir hata oluştu.',
-      ephemeral: true
-    });
-  }
-});
-
 const fs = require("fs");
 
 // === 7/24 AKTIFLIK ICIN EKLENEN KOD BASLANGIC ===
@@ -140,7 +126,57 @@ fs.readdir("./slash/", (_err, files) => {
   });
 });
 
-// ISTEMCI ILE GIRIS YAP - KESIN COZUM
+// === EKSİK OLAN INTERACTIONCREATE EVENT'İ (SLASH KOMUTLARI İÇİN) ===
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return;
+  const command = client.interactions.get(interaction.commandName);
+  if (!command) return;
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({
+      content: 'Komut çalıştırılırken bir hata oluştu.',
+      ephemeral: true
+    });
+  }
+});
+
+// === MESAJ KOMUTLARI İÇİN GELİŞMİŞ İŞLEYİCİ (prefix ! ve rol kontrolü) ===
+const PREFIX = '!';
+const YETKILI_ROL_ID = '1514373793538244789'; // Bu role sahip olanlar komut kullanabilir
+
+client.on('messageCreate', async (message) => {
+  // Bot kendi mesajlarını ve diğer botları görmezden gel
+  if (message.author.bot) return;
+  if (!message.guild) return;
+  
+  // Prefix kontrolü
+  if (!message.content.startsWith(PREFIX)) return;
+  
+  // Argümanları ayır
+  const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+  const commandName = args.shift().toLowerCase();
+  const command = client.commands.get(commandName);
+  
+  // Geçerli komut yoksa çık
+  if (!command) return;
+  
+  // ROL KONTROLÜ: Kullanıcı belirtilen role sahip değilse engelle
+  if (!message.member.roles.cache.has(YETKILI_ROL_ID)) {
+    return message.reply({ content: '❌ Bu komutu kullanmak için yetkiniz yok! Sadece özel role sahip kişiler kullanabilir.', ephemeral: true });
+  }
+  
+  // Komutu çalıştır
+  try {
+    await command.execute(client, message, args);
+  } catch (error) {
+    console.error(`Komut hatası (${commandName}):`, error);
+    message.reply('Komut çalıştırılırken bir hata oluştu.');
+  }
+});
+
+// ISTEMCI ILE GIRIS YAP
 const BOT_TOKEN = process.env.DISCORD_TOKEN;
 if (!BOT_TOKEN) {
   console.error("[HATA] DISCORD_TOKEN environment degiskeni bulunamadi!");
@@ -149,22 +185,5 @@ if (!BOT_TOKEN) {
   process.exit(1);
 }
 
-// Rol kontrolü için event
-client.on('messageCreate', async (message) => {
-  if (message.author.bot) return;
-  if (!message.guild) return;
-  
-  const allowedRoleId = '1514373793538244789';
-  
-  // Eğer komutla başlıyorsa (prefix !)
-  if (message.content.startsWith('!')) {
-    const member = message.member;
-    if (!member.roles.cache.has(allowedRoleId)) {
-      return message.reply({ content: '❌ Bu komutu kullanmak için yetkiniz yok! Sadece özel role sahip kişiler kullanabilir.', ephemeral: true });
-    }
-  }
-});
-
 console.log("[BILGI] Token basariyla alindi. Bot Discord'a baglaniyor...");
 client.login(BOT_TOKEN);
-
