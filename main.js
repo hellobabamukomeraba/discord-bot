@@ -15,6 +15,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
+const YETKILI_ROLE_ID = '1514373793538244789';
 const fs = require("fs");
 
 // === 7/24 AKTIFLIK ICIN EKLENEN KOD BASLANGIC ===
