@@ -16,6 +16,31 @@ const client = new Client({
   ],
 });
 const YETKILI_ROLE_ID = '1514373793538244789';
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  // Yetki kontrolü
+  if (!interaction.member.roles.cache.has(YETKILI_ROLE_ID)) {
+    return interaction.reply({
+      content: 'Bu komutu kullanmak için yetkiniz yok!',
+      ephemeral: true // Sadece komutu kullanan kişi görür
+    });
+  }
+
+  const command = client.interactions.get(interaction.commandName);
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({
+      content: 'Komut çalıştırılırken bir hata oluştu.',
+      ephemeral: true
+    });
+  }
+});
+
 const fs = require("fs");
 
 // === 7/24 AKTIFLIK ICIN EKLENEN KOD BASLANGIC ===
