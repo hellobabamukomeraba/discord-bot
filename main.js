@@ -15,17 +15,6 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
-const YETKILI_ROLE_ID = '1514373793538244789';
-client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isCommand()) return;
-
-  // Yetki kontrolü
-  if (!interaction.member.roles.cache.has(YETKILI_ROLE_ID)) {
-    return interaction.reply({
-      content: 'Bu komutu kullanmak için yetkiniz yok!',
-      ephemeral: true // Sadece komutu kullanan kişi görür
-    });
-  }
 
   const command = client.interactions.get(interaction.commandName);
   if (!command) return;
@@ -160,5 +149,22 @@ if (!BOT_TOKEN) {
   process.exit(1);
 }
 
+// Rol kontrolü için event
+client.on('messageCreate', async (message) => {
+  if (message.author.bot) return;
+  if (!message.guild) return;
+  
+  const allowedRoleId = '1514373793538244789';
+  
+  // Eğer komutla başlıyorsa (prefix !)
+  if (message.content.startsWith('!')) {
+    const member = message.member;
+    if (!member.roles.cache.has(allowedRoleId)) {
+      return message.reply({ content: '❌ Bu komutu kullanmak için yetkiniz yok! Sadece özel role sahip kişiler kullanabilir.', ephemeral: true });
+    }
+  }
+});
+
 console.log("[BILGI] Token basariyla alindi. Bot Discord'a baglaniyor...");
 client.login(BOT_TOKEN);
+
