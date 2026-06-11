@@ -1,22 +1,15 @@
-const register = require('../../utils/slashsync');
-const { ActivityType } = require('discord.js');
-
+// events/discord/ready.js
 module.exports = async (client) => {
-  await register(client, client.register_arr.map((command) => ({
-    name: command.name,
-    description: command.description,
-    options: command.options,
-    type: '1'
-  })), {
-    debug: true
-  });
-  // Slash komutlarını kaydet - (Eğer kodları okuyanlardansanız, bunu göz ardı etmenizi öneririm çünkü gerçekten çok kötü yapıyorum, teşekkürler LMAO)
-  console.log(`[ / | Slash Komutu ] - ✅ Tüm slash komutları yüklendi!`)
-  let invite = `https://discord.com/oauth2/authorize?client_id=1411630023294586931&permissions=8&integration_type=0&scope=bot`;
-  console.log(`[STATÜ] ${client.user.tag} şu an çevrimiçi!\n[BİLGİ] Bot Arx tarafından yapıldı ${invite}`);
-  client.user.setPresence({
-  activities: [{ name: `By Arx.`, type: ActivityType.Watching }],
-  status: 'dnd',
-});
-
+  console.log(`${client.user.tag} olarak giriş yapıldı ve hazır!`);
+  console.log(`Bot ${client.guilds.cache.size} sunucuda hizmet veriyor.`);
+  
+  // // --- AŞAĞIDAKİ SATIRLARI GEÇİCİ OLARAK YORUM SATIRI YAPTIM (SORUN ÇÖZÜLENE KADAR) ---
+  // try {
+  //   console.log("Komutlar senkronize ediliyor...");
+  //   await require('../../utils/slashsync')(client);
+  //   console.log("Slash komutları başarıyla senkronize edildi.");
+  // } catch (error) {
+  //   console.error("[HATA] Slash komutları senkronize edilirken hata oluştu:", error);
+  // }
+  // // --- YORUM SATIRI SONU ---
 };
